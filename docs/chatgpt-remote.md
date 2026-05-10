@@ -15,7 +15,24 @@ Before deploying:
 
 - Store `ICLOUD_USERNAME`, `ICLOUD_APP_PASSWORD`, `ICLOUD_USER_ALIASES`, and `ICLOUD_USER_TIMEZONE` as hosting-provider environment variables or secrets.
 - Start with `ICLOUD_MCP_READ_ONLY=1` until you have verified that ChatGPT is calling only the tools you expect.
-- Do not expose this server publicly without access control. It can read and modify your calendar and mail.
+- Keep OAuth enabled. This server can read and modify your calendar and mail.
+
+## OAuth
+
+Remote deployments should require OAuth. Set these additional environment
+variables:
+
+```text
+MCP_OAUTH_ENABLED=1
+MCP_PUBLIC_BASE_URL=https://your-deployment-host.example.com
+MCP_OAUTH_SIGNING_SECRET=<random 32+ char secret>
+MCP_OAUTH_PASSWORD=<private passphrase you enter during authorization>
+```
+
+When ChatGPT connects, it will open an authorization page. Enter
+`MCP_OAUTH_PASSWORD` there. The OAuth implementation is stateless for Vercel:
+dynamic client registrations, auth codes, access tokens, and refresh tokens are
+signed with `MCP_OAUTH_SIGNING_SECRET`.
 
 ## HTTP transport
 
@@ -36,6 +53,11 @@ ICLOUD_APP_PASSWORD
 ICLOUD_USER_ALIASES
 ICLOUD_USER_TIMEZONE
 ICLOUD_MCP_READ_ONLY
+MCP_OAUTH_ENABLED
+MCP_PUBLIC_BASE_URL
+MCP_OAUTH_SIGNING_SECRET
+MCP_OAUTH_PASSWORD
+MCP_ALLOWED_HOSTS
 ```
 
 Start with `ICLOUD_MCP_READ_ONLY=1` until you have verified the integration.
