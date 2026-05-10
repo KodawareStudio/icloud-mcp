@@ -1,4 +1,4 @@
-"""Pre-flight check: validate everything works end-to-end before wiring into Claude Desktop.
+"""Pre-flight check: validate everything works end-to-end before MCP wiring.
 
 Run with:
     uv run python scripts/preflight.py
@@ -25,7 +25,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 
 
-# ANSI escapes; Claude Desktop logs may not render these but humans running
+# ANSI escapes; some MCP client logs may not render these but humans running
 # this in a terminal will see colored output.
 GREEN = "\033[92m"
 RED = "\033[91m"
@@ -225,11 +225,9 @@ def main() -> None:
     # ---- All passed ----
     print(f"\n{GREEN}{BOLD}All checks passed.{RESET}")
     print()
-    print("Next: install the .mcpb in Claude Desktop, or wire it up manually:")
+    print("Next: wire this server into your MCP client or deploy it remotely.")
     print()
-    print("  ~/Library/Application Support/Claude/claude_desktop_config.json")
-    print()
-    print("  See README.md for the JSON snippet.")
+    print("  See README.md for local config and docs/chatgpt-remote.md for remote setup.")
 
 
 if __name__ == "__main__":

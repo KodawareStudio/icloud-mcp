@@ -3,7 +3,7 @@
 Run with:
     uv run python scripts/smoke.py
 
-This bypasses Claude Desktop entirely so you can verify your credentials
+This bypasses your MCP client entirely so you can verify your credentials
 and the network round-trip work before wiring the MCP server up.
 """
 from __future__ import annotations

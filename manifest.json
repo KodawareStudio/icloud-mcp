@@ -3,8 +3,8 @@
   "name": "icloud-mcp",
   "display_name": "iCloud Calendar & Mail",
   "version": "0.7.0",
-  "description": "Personal iCloud Calendar and Mail integration for Claude Desktop.",
-  "long_description": "Connects Claude to your iCloud Calendar (CalDAV) and iCloud Mail (IMAP + SMTP). Read and modify events, search and respond to meeting invites, find free time, and read, search, send, and organize mail. Includes workflow tools that combine calendar and mail in one call (today's brief; meeting prep with bidirectional email correspondence).\n\nAll communication is between your Mac and iCloud directly. Credentials are stored in the OS keychain.\n\nRequires an app-specific password from appleid.apple.com (Sign-In and Security \u2192 App-Specific Passwords). The same password works for Calendar, Mail, and SMTP.",
+  "description": "Personal iCloud Calendar and Mail integration for MCP clients.",
+  "long_description": "Connects an MCP client to your iCloud Calendar (CalDAV) and iCloud Mail (IMAP + SMTP). Read and modify events, search and respond to meeting invites, find free time, and read, search, send, and organize mail. Includes workflow tools that combine calendar and mail in one call (today's brief; meeting prep with bidirectional email correspondence).\n\nAll communication is between the running server and iCloud directly. Credentials should be stored in local environment variables or deployment secrets.\n\nRequires an app-specific password from appleid.apple.com (Sign-In and Security \u2192 App-Specific Passwords). The same password works for Calendar, Mail, and SMTP.",
   "author": {
     "name": "icloud-mcp"
   },
@@ -78,7 +78,6 @@
     }
   },
   "compatibility": {
-    "claude_desktop": ">=0.10.0",
     "platforms": ["darwin", "win32", "linux"],
     "runtimes": {
       "python": ">=3.11"

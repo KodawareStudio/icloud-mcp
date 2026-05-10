@@ -1,7 +1,7 @@
 """Domain-specific exceptions for iCloud MCP.
 
 These wrap underlying caldav / network errors with messages that are
-actionable for the calling agent (Claude), not just the developer.
+actionable for the calling agent, not just the developer.
 """
 from __future__ import annotations
 

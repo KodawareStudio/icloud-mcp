@@ -3,7 +3,7 @@
 Run with:
     uv run python scripts/smoke_mail.py
 
-This bypasses Claude Desktop entirely so you can verify your IMAP credentials
+This bypasses your MCP client entirely so you can verify your IMAP credentials
 and the network round-trip work before wiring the MCP server up.
 
 Note: the same app-specific password works for both Calendar and Mail —

@@ -1,6 +1,6 @@
 # icloud-mcp
 
-A local MCP server that connects Claude Desktop to your iCloud Calendar and Mail. Runs entirely on your Mac; credentials never leave your machine.
+A Model Context Protocol server that connects an MCP client to your iCloud Calendar and Mail. Runs locally by default; credentials stay in your environment or deployment secrets.
 
 **24 tools** across calendar (9), mail (13), and cross-cutting workflows (2). All communication is between your Mac and iCloud directly.
 
@@ -8,7 +8,7 @@ A local MCP server that connects Claude Desktop to your iCloud Calendar and Mail
 
 ## What this can do
 
-After installing, ask Claude things like:
+After installing, ask your MCP client things like:
 
 - *"What's on my calendar tomorrow?"*
 - *"Find a 45-minute slot Wednesday afternoon."*
@@ -16,14 +16,14 @@ After installing, ask Claude things like:
 - *"What unread mail do I have from this week?"*
 - *"Walk me through my 10am — show recent emails with the attendees."* (uses `prep_for_meeting`)
 - *"Give me a brief for today."* (uses `today_brief`)
-- *"Reply to the latest email from Alice."* (Claude composes, you confirm via dry-run)
+- *"Reply to the latest email from Alice."* (preview with `dry_run=true`, then confirm before sending)
 - *"Move all newsletters from this week to Archive."*
 
 ## Setup
 
 ### 1. Get an iCloud app-specific password (one-time)
 
-Go to [appleid.apple.com](https://appleid.apple.com) → **Sign-In and Security** → **App-Specific Passwords** → **Generate Password**. Label it "Claude MCP". Copy the 16-character password — you won't see it again. The same password works for Calendar, Mail, and SMTP.
+Go to [appleid.apple.com](https://appleid.apple.com) → **Sign-In and Security** → **App-Specific Passwords** → **Generate Password**. Label it "iCloud MCP". Copy the 16-character password — you won't see it again. The same password works for Calendar, Mail, and SMTP.
 
 ### 2. Install [`uv`](https://docs.astral.sh/uv/)
 
@@ -33,24 +33,9 @@ brew install uv
 
 The MCP runs Python under `uv`, which manages the virtualenv and dependencies for you.
 
-### 3. Install the extension
+### 3. Configure a local MCP client
 
-You have two paths. Pick one.
-
-#### Path A: One-click install via `.mcpb` (recommended)
-
-Download `icloud-mcp.mcpb` from the release. Double-click to open in Claude Desktop. Claude Desktop will:
-
-- Show the install dialog with the tool list
-- Prompt you for your iCloud email, app-specific password, and optional config (aliases, timezone, read-only mode)
-- Store the password in macOS Keychain
-- Wire the server in automatically
-
-After install, restart Claude Desktop and the tools are live. No JSON editing.
-
-#### Path B: Manual config
-
-Unzip the project somewhere stable (e.g. `~/code/icloud-mcp`), then edit `~/Library/Application Support/Claude/claude_desktop_config.json` (create if missing):
+Unzip the project somewhere stable (e.g. `~/code/icloud-mcp`), then add a server entry to your MCP client's configuration:
 
 ```json
 {
@@ -74,11 +59,11 @@ Unzip the project somewhere stable (e.g. `~/code/icloud-mcp`), then edit `~/Libr
 }
 ```
 
-Use the absolute path; no `~`. If Claude Desktop can't find `uv`, replace `"uv"` with the output of `which uv`.
+Use the absolute path; no `~`. If your MCP client can't find `uv`, replace `"uv"` with the output of `which uv`.
 
-### 4. Run the pre-flight check (recommended before path A or B)
+### 4. Run the pre-flight check
 
-This validates everything end-to-end without involving Claude Desktop. Six checks: env, CalDAV auth, calendar read, IMAP auth, mail read, SMTP auth. Sends nothing.
+This validates everything end-to-end without involving an MCP client. Six checks: env, CalDAV auth, calendar read, IMAP auth, mail read, SMTP auth. Sends nothing.
 
 ```sh
 cd icloud-mcp
@@ -89,13 +74,13 @@ uv run python scripts/preflight.py
 
 If all six pass, the system is ready. If something fails, the message tells you exactly what to fix.
 
-### 5. (After install) Verify in Claude Desktop
+### 5. Verify the MCP connection
 
-Restart Claude Desktop. A tools indicator appears in the input bar when the icloud server is connected. In a new chat, ask:
+Restart your MCP client. In a new chat, ask:
 
 > *"What's on my calendar tomorrow?"*
 
-Claude should call `list_events` and answer.
+The client should call `list_events` and answer.
 
 ## Optional configuration
 
@@ -142,7 +127,7 @@ Claude should call `list_events` and answer.
 
 **Thread reconstruction.** `get_thread` walks Message-ID, In-Reply-To, and References headers. By default it searches only the seed's mailbox; pass `additional_mailboxes=["Sent Messages"]` for full bidirectional context.
 
-**Read-only mode.** Set `ICLOUD_MCP_READ_ONLY=1` in env (or toggle the user_config option in Claude Desktop's UI). All write tools refuse with `ReadOnlyError`. Useful while you're getting comfortable.
+**Read-only mode.** Set `ICLOUD_MCP_READ_ONLY=1` in env. All write tools refuse with `ReadOnlyError`. Useful while you're getting comfortable.
 
 **Aliases.** Apple sometimes delivers invites and mail to your `@me.com` or `@mac.com` aliases even though you connected with `@icloud.com`. Set `ICLOUD_USER_ALIASES` to a comma-separated list so `respond_to_invite` finds your attendee record and `prep_for_meeting` correctly filters you out of attendee lists.
 
@@ -156,7 +141,7 @@ Claude should call `list_events` and answer.
 
 **Empty event list when you expect events.** `start` and `end` must include timezone offsets. Naive datetimes are rejected.
 
-**Claude Desktop doesn't see the server.** Check `~/Library/Logs/Claude/mcp*.log`. Most common: wrong directory path in manual config, or `uv` not on Claude Desktop's PATH. Replace `"uv"` with the full output of `which uv`.
+**Your MCP client doesn't see the server.** Most common causes are a wrong directory path in config, missing environment variables, or `uv` not being on the client's PATH. Replace `"uv"` with the full output of `which uv`.
 
 ## Project layout
 
@@ -178,18 +163,6 @@ icloud-mcp/
 │   └── smoke_mail.py        Mail smoke test
 └── tests/                   119 unit tests
 ```
-
-## Building the .mcpb
-
-If you want to rebuild the bundle:
-
-```sh
-npm install -g @anthropic-ai/mcpb
-cd icloud-mcp
-mcpb pack
-```
-
-This produces `icloud-mcp.mcpb` ready for one-click install.
 
 ## Remote transports
 

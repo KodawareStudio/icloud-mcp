@@ -19,7 +19,7 @@ Before deploying:
 
 ## HTTP transport
 
-The default local transport is `stdio`, for Claude Desktop and other local MCP clients.
+The default local transport is `stdio`, for local MCP clients.
 
 For a remote ChatGPT connector, run with streamable HTTP:
 

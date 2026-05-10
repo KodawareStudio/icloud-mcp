@@ -131,7 +131,7 @@ class ICloudMailClient:
     Holds a single MailBox instance for the lifetime of the server. Folder
     state is set per operation. Reconnection on dropped connections is not
     implemented in the spike — if a long-running server hits a stale
-    connection, restart Claude Desktop.
+    connection, restart the MCP client.
     """
 
     def __init__(

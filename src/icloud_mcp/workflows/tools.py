@@ -145,7 +145,7 @@ def register_workflow_tools(
         newest-first and deduplicated across folders by Message-ID.
 
         Designed to answer "walk me through this meeting" in one call.
-        Claude can summarize from the structured response without further
+        The MCP client can summarize from the structured response without further
         round-trips.
 
         Args:
