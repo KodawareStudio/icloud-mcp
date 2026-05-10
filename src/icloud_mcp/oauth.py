@@ -34,7 +34,11 @@ REFRESH_TOKEN_TTL_SECONDS = 30 * 24 * 60 * 60
 
 
 def oauth_enabled() -> bool:
-    return os.environ.get("MCP_OAUTH_ENABLED", "").lower() in {"1", "true", "yes"}
+    return os.environ.get("MCP_OAUTH_ENABLED", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
 
 
 def public_base_url() -> str:

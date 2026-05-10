@@ -53,7 +53,7 @@ class Config:
                 f"ICLOUD_USERNAME must be a full email address (got: {username!r})."
             )
 
-        read_only = os.environ.get("ICLOUD_MCP_READ_ONLY", "").lower() in (
+        read_only = os.environ.get("ICLOUD_MCP_READ_ONLY", "").strip().lower() in (
             "1",
             "true",
             "yes",
