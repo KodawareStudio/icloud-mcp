@@ -21,6 +21,25 @@ Before deploying:
 
 The default local transport is `stdio`, for local MCP clients.
 
+On Vercel, the ASGI entrypoint in `app.py` serves the streamable HTTP MCP app.
+The MCP endpoint is:
+
+```text
+https://your-deployment-host.example.com/mcp
+```
+
+Set these Vercel environment variables:
+
+```text
+ICLOUD_USERNAME
+ICLOUD_APP_PASSWORD
+ICLOUD_USER_ALIASES
+ICLOUD_USER_TIMEZONE
+ICLOUD_MCP_READ_ONLY
+```
+
+Start with `ICLOUD_MCP_READ_ONLY=1` until you have verified the integration.
+
 For a remote ChatGPT connector, run with streamable HTTP:
 
 ```sh
