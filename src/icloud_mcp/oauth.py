@@ -254,7 +254,7 @@ def register_oauth_routes(mcp: Any, provider: StatelessOAuthProvider) -> None:
         form = await request.form()
         request_token = str(form.get("request", ""))
         password = str(form.get("password", ""))
-        expected_password = os.environ.get("MCP_OAUTH_PASSWORD", "")
+        expected_password = os.environ.get("MCP_OAUTH_PASSWORD", "").strip()
         if not hmac.compare_digest(password.encode(), expected_password.encode()):
             return HTMLResponse(_confirm_html(request_token, error="Incorrect passphrase."), status_code=401)
 
