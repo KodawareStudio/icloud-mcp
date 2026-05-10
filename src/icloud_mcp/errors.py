@@ -31,6 +31,10 @@ class MessageNotFoundError(ICloudError):
     """
 
 
+class ContactNotFoundError(ICloudError):
+    """Requested contact resource does not exist in iCloud Contacts."""
+
+
 class CalendarNotFoundError(ICloudError):
     """No calendar with the requested name exists on the account."""
 

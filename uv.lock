@@ -400,6 +400,7 @@ dependencies = [
     { name = "icalendar" },
     { name = "imap-tools" },
     { name = "mcp", extra = ["cli"] },
+    { name = "niquests" },
     { name = "pydantic" },
     { name = "python-dotenv" },
 ]
@@ -416,6 +417,7 @@ requires-dist = [
     { name = "icalendar", specifier = ">=5.0" },
     { name = "imap-tools", specifier = ">=1.5" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.2" },
+    { name = "niquests", specifier = ">=3.0" },
     { name = "pydantic", specifier = ">=2.6" },
     { name = "python-dotenv", specifier = ">=1.0" },
 ]

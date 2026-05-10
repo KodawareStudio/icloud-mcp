@@ -19,6 +19,8 @@ from mcp.server.auth.settings import AuthSettings, ClientRegistrationOptions
 from icloud_mcp.calendar.client import ICloudCalendarClient
 from icloud_mcp.calendar.tools import register_calendar_tools
 from icloud_mcp.config import config
+from icloud_mcp.contacts.client import ICloudContactsClient
+from icloud_mcp.contacts.tools import register_contacts_tools
 from icloud_mcp.mail.client import ICloudMailClient
 from icloud_mcp.mail.tools import register_mail_tools
 from icloud_mcp.oauth import (
@@ -72,9 +74,14 @@ mail_client = ICloudMailClient(
     password=config.icloud_app_password,
     user_emails=config.all_user_emails,
 )
+contacts_client = ICloudContactsClient(
+    username=config.icloud_username,
+    password=config.icloud_app_password,
+)
 
 register_calendar_tools(mcp, config, calendar_client)
 register_mail_tools(mcp, config, mail_client)
+register_contacts_tools(mcp, config, contacts_client)
 register_workflow_tools(mcp, config, calendar_client, mail_client)
 
 

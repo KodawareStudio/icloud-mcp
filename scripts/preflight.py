@@ -13,6 +13,8 @@ Checks (in order):
     4. IMAP: connection + auth + mailbox list
     5. IMAP: list 5 most recent INBOX messages
     6. SMTP: TLS handshake + auth (sends nothing)
+    7. CardDAV: connection + auth + address book list
+    8. CardDAV: read one contact summary
 
 If all six pass, the system is ready. If something fails, the message tells
 you exactly what to fix.
@@ -53,7 +55,7 @@ def step(n: int, total: int, label: str) -> None:
 def main() -> None:
     print(f"{BOLD}icloud-mcp pre-flight check{RESET}\n")
 
-    total = 6
+    total = 8
 
     # ---- 1. env ----
     step(1, total, "Environment configuration")
@@ -221,6 +223,55 @@ def main() -> None:
         return
 
     ok("SMTP login successful. send_mail will work.")
+
+    # ---- 7. CardDAV connect ----
+    step(7, total, "CardDAV connection (contacts)")
+    try:
+        from icloud_mcp.contacts.client import ICloudContactsClient
+
+        contacts = ICloudContactsClient(
+            username=cfg.icloud_username,
+            password=cfg.icloud_app_password,
+        )
+        addressbooks = contacts.list_addressbooks()
+    except AuthenticationError as e:
+        fail(
+            "CardDAV authentication failed",
+            f"{e}\n\n"
+            "Verify the same app-specific password is being used and Contacts "
+            "is enabled for the iCloud account.",
+        )
+        return
+    except NetworkError as e:
+        fail(
+            "Could not reach iCloud CardDAV",
+            f"{e}\n\nContacts CardDAV is discovered from contacts.icloud.com.",
+        )
+        return
+    except Exception as e:
+        fail("Unexpected CardDAV error", f"{type(e).__name__}: {e}")
+        return
+
+    ok(f"Connected. Found {len(addressbooks)} address book(s):")
+    for book in addressbooks:
+        print(f"      • {book.name}")
+
+    # ---- 8. CardDAV read ----
+    step(8, total, "Read one contact summary")
+    try:
+        contact_sample = contacts.list_contacts(limit=1)
+    except Exception as e:
+        fail("Contact fetch failed", f"{type(e).__name__}: {e}")
+        return
+
+    if contact_sample:
+        c = contact_sample[0]
+        ok(
+            "Read 1 contact summary "
+            f"({len(c.emails)} email value(s), {len(c.phones)} phone value(s))."
+        )
+    else:
+        ok("Read 0 contacts (no contacts visible in iCloud Contacts).")
 
     # ---- All passed ----
     print(f"\n{GREEN}{BOLD}All checks passed.{RESET}")

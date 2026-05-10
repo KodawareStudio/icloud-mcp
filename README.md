@@ -1,7 +1,7 @@
 # icloud-mcp
-A Model Context Protocol server that connects an MCP client to your iCloud Calendar and Mail. Runs locally by default; credentials stay in your environment or deployment secrets.
+A Model Context Protocol server that connects an MCP client to your iCloud Calendar, Mail, and Contacts. Runs locally by default; credentials stay in your environment or deployment secrets.
 
-**24 tools** across calendar (9), mail (13), and cross-cutting workflows (2). All communication is between your Mac and iCloud directly.
+**28 tools** across calendar (9), mail (13), contacts (4), and cross-cutting workflows (2). All communication is between your Mac and iCloud directly.
 
 > ChatGPT needs a running remote MCP endpoint, not a GitHub repository URL. See [docs/chatgpt-remote.md](docs/chatgpt-remote.md) before deploying this server remotely.
 
@@ -17,12 +17,13 @@ After installing, ask your MCP client things like:
 - *"Give me a brief for today."* (uses `today_brief`)
 - *"Reply to the latest email from Alice."* (preview with `dry_run=true`, then confirm before sending)
 - *"Move all newsletters from this week to Archive."*
+- *"Find Alice's phone number in my contacts."*
 
 ## Setup
 
 ### 1. Get an iCloud app-specific password (one-time)
 
-Go to [appleid.apple.com](https://appleid.apple.com) → **Sign-In and Security** → **App-Specific Passwords** → **Generate Password**. Label it "iCloud MCP". Copy the 16-character password — you won't see it again. The same password works for Calendar, Mail, and SMTP.
+Go to [appleid.apple.com](https://appleid.apple.com) → **Sign-In and Security** → **App-Specific Passwords** → **Generate Password**. Label it "iCloud MCP". Copy the 16-character password — you won't see it again. The same password works for Calendar, Mail, SMTP, and Contacts.
 
 ### 2. Install [`uv`](https://docs.astral.sh/uv/)
 
@@ -62,7 +63,7 @@ Use the absolute path; no `~`. If your MCP client can't find `uv`, replace `"uv"
 
 ### 4. Run the pre-flight check
 
-This validates everything end-to-end without involving an MCP client. Six checks: env, CalDAV auth, calendar read, IMAP auth, mail read, SMTP auth. Sends nothing.
+This validates everything end-to-end without involving an MCP client. Eight checks: env, CalDAV auth, calendar read, IMAP auth, mail read, SMTP auth, CardDAV auth, and contact read. Sends nothing.
 
 ```sh
 cd icloud-mcp
@@ -116,6 +117,16 @@ The client should call `list_events` and answer.
 - **`today_brief`** — Today's events + cancelled count + pending invites + recent unread mail in one call. Honors `ICLOUD_USER_TIMEZONE`.
 - **`prep_for_meeting`** — Event details + bidirectional email correspondence with each attendee (last 14 days by default), searched across INBOX *and* Sent Messages, deduplicated by Message-ID. Filters out the user's primary email and aliases from the attendee list.
 
+### Contacts (4)
+
+**Reads:** `list_contact_addressbooks`, `list_contacts`, `search_contacts`, `get_contact`.
+
+Contacts are fetched from iCloud Contacts over CardDAV. `list_contacts` and
+`search_contacts` return structured fields (name, organization, emails, phones,
+postal addresses, URLs, birthday). Notes are omitted by default; pass
+`include_notes=true` when they are needed. Raw vCard data is only returned by
+`get_contact` when `include_raw_vcard=true`.
+
 ## Behavioral details worth knowing
 
 **Recurring events.** Updates and deletes have two modes: omit `occurrence_start` to target the whole series, provide it (the `recurrence_id` from `list_events`) to target a single instance. The default in `update_event` is series-wide, so be explicit when you only want to change one occurrence.
@@ -154,6 +165,7 @@ icloud-mcp/
 │   ├── errors.py            domain error types
 │   ├── util.py              shared helpers (validate_email)
 │   ├── calendar/            CalDAV: client, models, tools
+│   ├── contacts/            CardDAV: client, models, tools
 │   ├── mail/                IMAP + SMTP: client, models, tools
 │   └── workflows/           Cross-cutting tools (today_brief, prep_for_meeting)
 ├── scripts/

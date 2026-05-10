@@ -1,13 +1,14 @@
 [project]
 name = "icloud-mcp"
 version = "0.7.0"
-description = "MCP server exposing iCloud Calendar and Mail"
+description = "MCP server exposing iCloud Calendar, Mail, and Contacts"
 requires-python = ">=3.11"
 dependencies = [
     "mcp[cli]>=1.2",
     "caldav>=1.3",
     "icalendar>=5.0",
     "imap-tools>=1.5",
+    "niquests>=3.0",
     "pydantic>=2.6",
     "python-dotenv>=1.0",
 ]
