@@ -1,0 +1,113 @@
+{
+  "manifest_version": "0.4",
+  "name": "icloud-mcp",
+  "display_name": "iCloud Calendar & Mail",
+  "version": "0.7.0",
+  "description": "Personal iCloud Calendar and Mail integration for Claude Desktop.",
+  "long_description": "Connects Claude to your iCloud Calendar (CalDAV) and iCloud Mail (IMAP + SMTP). Read and modify events, search and respond to meeting invites, find free time, and read, search, send, and organize mail. Includes workflow tools that combine calendar and mail in one call (today's brief; meeting prep with bidirectional email correspondence).\n\nAll communication is between your Mac and iCloud directly. Credentials are stored in the OS keychain.\n\nRequires an app-specific password from appleid.apple.com (Sign-In and Security \u2192 App-Specific Passwords). The same password works for Calendar, Mail, and SMTP.",
+  "author": {
+    "name": "icloud-mcp"
+  },
+  "license": "MIT",
+  "keywords": [
+    "icloud",
+    "calendar",
+    "caldav",
+    "mail",
+    "imap",
+    "smtp",
+    "apple",
+    "personal-productivity"
+  ],
+  "server": {
+    "type": "python",
+    "entry_point": "src/icloud_mcp/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "${__dirname}",
+        "python",
+        "-m",
+        "icloud_mcp.server"
+      ],
+      "env": {
+        "ICLOUD_USERNAME": "${user_config.icloud_username}",
+        "ICLOUD_APP_PASSWORD": "${user_config.icloud_app_password}",
+        "ICLOUD_USER_ALIASES": "${user_config.icloud_user_aliases}",
+        "ICLOUD_USER_TIMEZONE": "${user_config.icloud_user_timezone}",
+        "ICLOUD_MCP_READ_ONLY": "${user_config.icloud_mcp_read_only}"
+      }
+    }
+  },
+  "user_config": {
+    "icloud_username": {
+      "type": "string",
+      "title": "iCloud Email",
+      "description": "Your full Apple ID email address (e.g. you@icloud.com).",
+      "required": true
+    },
+    "icloud_app_password": {
+      "type": "string",
+      "title": "App-Specific Password",
+      "description": "Generate at appleid.apple.com \u2192 Sign-In and Security \u2192 App-Specific Passwords. Format: xxxx-xxxx-xxxx-xxxx. Stored in your OS keychain.",
+      "sensitive": true,
+      "required": true
+    },
+    "icloud_user_aliases": {
+      "type": "string",
+      "title": "Email Aliases (optional)",
+      "description": "Comma-separated additional emails you receive mail/invites under (e.g. you@me.com,you@mac.com). Without this, responding to invites addressed to your aliases will fail.",
+      "required": false,
+      "default": ""
+    },
+    "icloud_user_timezone": {
+      "type": "string",
+      "title": "Timezone (optional)",
+      "description": "IANA timezone name like America/Los_Angeles or Europe/London. Used by today_brief and other workflow tools so 'today' matches your local time. Defaults to UTC.",
+      "required": false,
+      "default": ""
+    },
+    "icloud_mcp_read_only": {
+      "type": "boolean",
+      "title": "Read-only mode",
+      "description": "Disable all destructive tools (sends, deletes, edits). Recommended while you're getting comfortable.",
+      "required": false,
+      "default": false
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "python": ">=3.11"
+    }
+  },
+  "tools": [
+    {"name": "list_calendars", "description": "List all iCloud calendars on the connected account."},
+    {"name": "list_events", "description": "List calendar events within a time window."},
+    {"name": "get_event", "description": "Fetch a single event by UID."},
+    {"name": "search_events", "description": "Substring search across event title, description, and location."},
+    {"name": "find_free_slots", "description": "Find free time slots of at least N minutes in a window."},
+    {"name": "create_event", "description": "Create a new (non-recurring) calendar event."},
+    {"name": "update_event", "description": "Modify an existing event; supports per-occurrence updates for recurring events."},
+    {"name": "delete_event", "description": "Delete an event; supports per-occurrence cancellation via EXDATE."},
+    {"name": "respond_to_invite", "description": "Accept, decline, or tentatively accept a meeting invite."},
+    {"name": "list_mailboxes", "description": "List all IMAP folders on the connected iCloud Mail account."},
+    {"name": "list_messages", "description": "List recent message headers from a folder, newest first."},
+    {"name": "get_message", "description": "Fetch a single message with body and attachment metadata."},
+    {"name": "search_mail", "description": "Server-side IMAP search over a mailbox by sender, subject, content, or date."},
+    {"name": "get_thread", "description": "Reconstruct the conversation containing a given message; supports cross-mailbox search."},
+    {"name": "get_attachment", "description": "Fetch a single attachment's bytes by index."},
+    {"name": "send_mail", "description": "Send a new email via SMTP and save a copy to the Sent folder."},
+    {"name": "mark_read", "description": "Mark messages as read."},
+    {"name": "mark_unread", "description": "Mark messages as unread."},
+    {"name": "flag_messages", "description": "Add a star/flag to messages."},
+    {"name": "unflag_messages", "description": "Remove the star/flag from messages."},
+    {"name": "move_message", "description": "Move a single message between folders."},
+    {"name": "delete_message", "description": "Delete a message; soft-delete to Trash by default."},
+    {"name": "today_brief", "description": "Single-call summary of today's calendar + recent unread mail."},
+    {"name": "prep_for_meeting", "description": "Bundle event details + bidirectional email correspondence with attendees."}
+  ]
+}
