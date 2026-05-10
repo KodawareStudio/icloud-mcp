@@ -1,5 +1,4 @@
 # icloud-mcp
-
 A Model Context Protocol server that connects an MCP client to your iCloud Calendar and Mail. Runs locally by default; credentials stay in your environment or deployment secrets.
 
 **24 tools** across calendar (9), mail (13), and cross-cutting workflows (2). All communication is between your Mac and iCloud directly.
