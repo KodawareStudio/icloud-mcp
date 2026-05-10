@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+.oauth-passphrase
+.venv/
+.pytest_cache/
+.ruff_cache/
+__pycache__/
+**/__pycache__/
+*.pyc
+.DS_Store
+.git/

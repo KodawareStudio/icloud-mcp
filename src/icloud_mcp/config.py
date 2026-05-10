@@ -11,7 +11,8 @@ from typing import Optional
 
 from dotenv import load_dotenv
 
-load_dotenv()
+if not os.environ.get("VERCEL"):
+    load_dotenv()
 
 
 @dataclass(frozen=True)
