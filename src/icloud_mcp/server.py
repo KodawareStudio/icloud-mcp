@@ -15,6 +15,8 @@ from typing import Literal
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.auth.settings import AuthSettings, ClientRegistrationOptions
+from starlette.requests import Request
+from starlette.responses import JSONResponse, Response
 
 from icloud_mcp.calendar.client import ICloudCalendarClient
 from icloud_mcp.calendar.tools import register_calendar_tools
@@ -59,6 +61,18 @@ mcp = FastMCP(
 )
 if oauth_provider is not None:
     register_oauth_routes(mcp, oauth_provider)
+
+
+@mcp.custom_route("/health", methods=["GET"], include_in_schema=False)
+async def health(_: Request) -> Response:
+    return JSONResponse(
+        {
+            "ok": True,
+            "oauth_enabled": oauth_enabled(),
+            "auth_configured": auth_settings is not None,
+            "read_only": config.read_only,
+        }
+    )
 
 # Construct clients once and share across subsystems so workflow tools can
 # reuse the same connections (and the calendar principal cache).
